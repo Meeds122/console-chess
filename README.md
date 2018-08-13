@@ -2,7 +2,7 @@
 
 Command line chess games. 
 
-In it's current guise, it is basically a digital chessboard. Nothing more.
+In it's current guise, it is a digital chessboard. Nothing more.
 
 **NOT YET COMPLETE**
 
