@@ -8,7 +8,7 @@ The good:
 * Play chess on the console
 
 The bad:
-* Not yet playable
+* No AI
 
 The ugly:
 * This code, it's my first C project beyond 150 lines of code.
