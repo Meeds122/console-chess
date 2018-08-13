@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define BLACK 0
 #define WHITE 1
+
+#define INPUT_SIZE 32
 
 /*
 Name   - N - ID
@@ -14,6 +17,31 @@ Horse  - H - 3
 Castle - C - 4
 Pawn   - P - 5
 */
+
+void help(){
+    printf("Welcome to Console-Chess!\n"
+    "The following commands are acceptable:\n"
+    "move x,y x,y            - move (from here) (to there)\n"
+    "new game (or just new)  - reset game\n"
+    "help                    - show this information\n"
+    "exit                    - exit game\n"
+    "\nJust some quick nomenclature: \n"
+    "Name   - N\n"
+    "----------\n"
+    "King   - K\n"
+    "Queen  - Q\n"
+    "Bishop - B\n"
+    "Horse  - H\n"
+    "Castle - C\n"
+    "Pawn   - P\n"
+    "\nE.g. Pw - Pawn white\n"
+    "     Kb - King black\n"
+    "     Hw - Horse white\n"
+    "\nHave fun and good luck!\n"
+    "-Tristan\n<enter> to continue\n"
+    );
+    getchar();
+}
 
 struct Piece{
     short int x; // x coordinate for that piece
@@ -98,16 +126,14 @@ void initializeGame(struct Game *game){
     for(int i = 16; i < 32; i++){
         if(i < 24){
             //white pawns
-            game->pieces[i] = makePiece((i % 8), 2, 5, WHITE);
+            game->pieces[i] = makePiece((i % 8) + 1, 2, 5, WHITE);
         }
         else{
             //black pawns
-            game->pieces[i] = makePiece((i % 8), 7, 5, BLACK);
+            game->pieces[i] = makePiece((i % 8) + 1, 7, 5, BLACK);
         }
-        //for some reason I'm missing the black pawn at 2,8
     }
 }
-
 
 void printBoard(struct Game *game){
     struct Piece board[8][8] = {};
@@ -116,16 +142,18 @@ void printBoard(struct Game *game){
         int y = game->pieces[i].y;
         x--;
         y--;
-        //printPieceStatus(game->pieces[i]);
-        board[x][y] = game->pieces[i];
+        //check for is_alive before placing on board
+        if(game->pieces[i].is_alive){
+            board[x][y] = game->pieces[i];
+        }
     }
-    printf("  1   2   3   4   5   6   7   8");
+    printf(" X 1   2   3   4   5   6   7   8\nY");
     for(int i = 0; i < 8; i++){
         printf("\n");
-        printf("%d", i + 1);
+        printf("%d ", i + 1);
         for(int j = 0; j < 8; j++){
             if(board[j][i].is_alive == 0){
-                printf( " __ " );
+                printf( " -- " );
             }
             else{
                 printf(" %c%c ", id2n(board[j][i]), side2char(board[j][i]));
@@ -134,6 +162,50 @@ void printBoard(struct Game *game){
         printf("\n");
     }
     printf("\n");
+}
+
+void movePiece(char *cmd, struct Game *game){
+    /*
+    Here we will break apart the cmd command and move the
+    relevant pieces in the game
+    */
+
+    int x_from;
+    int y_from;
+
+    int x_to;
+    int y_to;
+
+    sscanf(cmd, "move %d,%d %d,%d", &x_from, &y_from, &x_to, &y_to);
+
+    printf("[*] moving %d,%d to %d,%d\n", x_from, y_from, x_to, y_to);
+
+    //copy piece being moved to temp
+    //search for existing piece at location
+    //if piece is there, set is_alive to 0
+    for(int i = 0; i < 32; i++){
+        if((game->pieces[i].x == x_to) && (game->pieces[i].y == y_to)){
+            //case the piece we're looking at is in the location the moving piece is moving to
+            game->pieces[i].is_alive = 0;
+        }
+        else if((game->pieces[i].x == x_from) && (game->pieces[i].y == y_from)){
+            //case the piece we're looking at is the piece being moved
+            game->pieces[i].x = x_to;
+            game->pieces[i].y = y_to;
+        }
+    }
+}
+
+void runInput(char *cmd, struct Game *game){
+    if(strstr(cmd, "move") != NULL){
+        movePiece(cmd, game);
+    }
+    else if(strstr(cmd, "help") != NULL){
+        help();
+    }
+    else if(strstr(cmd, "new") != NULL){
+        initializeGame(game);
+    }
 }
 
 
@@ -147,15 +219,16 @@ int main()
     }
     initializeGame(game);
 
-    //testing
-    /*
-    printPieceStatus(game->pieces[0]);
-    printPieceStatus(game->pieces[1]);
-    printPieceStatus(game->pieces[2]);
-    printPieceStatus(game->pieces[3]);
-    */
-
-    printBoard(game);
+    int keep_playing = 0;
+    char in[INPUT_SIZE];
+    do{
+        printBoard(game);
+        printf(">>> ");
+        gets(in); // yes I know, not safe. Effective for windows getline(). Replace with better alt when porting to unix
+        runInput(in, game);
+        printf("\n\n");
+        keep_playing = strcmp(in, "exit");
+    } while(keep_playing);
 
     printf("[*] Freeing Game Memory\n");
     free(game);
