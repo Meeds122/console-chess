@@ -78,6 +78,9 @@ char id2n(struct Piece piece){
 }
 
 char side2char(struct Piece piece){
+    /*
+    This function returns the char representation of the pieces side
+    */
     if(piece.side == WHITE){
         return 'w';
     }
@@ -88,6 +91,9 @@ char side2char(struct Piece piece){
 }
 
 void printPieceStatus(struct Piece piece){
+    /*
+    Mostly for debugging. This function prints out the contents of a Piece struct
+    */
     printf("\nPiece ID: %d - %c\n"
            "(X, Y): (%d, %d)\n"
            "Side: %d\n"
@@ -136,6 +142,11 @@ void initializeGame(struct Game *game){
 }
 
 void printBoard(struct Game *game){
+    /*
+    Takes a Game struct in and prints the struct to a standard chessboard
+    has to account for the off by 1 offset that the labeled x,y positions have
+    compared to the 8x8 array. E.g. 1,1 is actually a 0,0 for grid purposes.
+    */
     struct Piece board[8][8] = {};
     for(int i = 0; i < 32; i++){
         int x = game->pieces[i].x;
@@ -167,7 +178,8 @@ void printBoard(struct Game *game){
 void movePiece(char *cmd, struct Game *game){
     /*
     Here we will break apart the cmd command and move the
-    relevant pieces in the game
+    relevant pieces in the game. sscanf is pretty vulnerable to malformed input.
+    Perhaps an alternative would be better.
     */
 
     int x_from;
@@ -197,6 +209,9 @@ void movePiece(char *cmd, struct Game *game){
 }
 
 void runInput(char *cmd, struct Game *game){
+    /*
+    Call the appropriate function given the input in main.
+    */
     if(strstr(cmd, "move") != NULL){
         movePiece(cmd, game);
     }
