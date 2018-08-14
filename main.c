@@ -53,6 +53,7 @@ struct Piece{
 
 struct Game{
     struct Piece pieces[32]; // total pieces on board
+    int turn;
 };
 
 char id2n(struct Piece piece){
@@ -139,6 +140,7 @@ void initializeGame(struct Game *game){
             game->pieces[i] = makePiece((i % 8) + 1, 7, 5, BLACK);
         }
     }
+    game->turn = WHITE;
 }
 
 void printBoard(struct Game *game){
@@ -223,25 +225,40 @@ void runInput(char *cmd, struct Game *game){
     }
 }
 
+void turnStatus(int turn){
+    if(turn % 2 == BLACK){
+        printf("%d - Black's Turn!\n\n", turn);
+    }
+    else if(turn % 2 == WHITE){
+        printf("%d - White's Turn!\n\n", turn);
+    }
+    else{
+        printf("[!] Turn status indeterminate\n");
+    }
+}
+
 
 int main()
 {
-    printf("[*] Initializing Game\n");
+    //printf("[*] Initializing Game\n");
     struct Game *game = malloc(sizeof(struct Game));
     if(game == NULL){
         perror("[!] Error: ");
         return errno;
     }
+
     initializeGame(game);
 
     int keep_playing = 0;
     char in[INPUT_SIZE];
     do{
+        turnStatus(game->turn);
         printBoard(game);
         printf(">>> ");
         gets(in); // yes I know, not safe. Effective for windows getline(). Replace with better alt when porting to unix
         runInput(in, game);
         printf("\n\n");
+        game->turn = game->turn + 1;
         keep_playing = strcmp(in, "exit");
     } while(keep_playing);
 
