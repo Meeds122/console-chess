@@ -256,9 +256,9 @@ int main()
         printBoard(game);
         printf(">>> ");
         gets(in); // yes I know, not safe. Effective for windows getline(). Replace with better alt when porting to unix
+        game->turn = game->turn + 1;
         runInput(in, game);
         printf("\n\n");
-        game->turn = game->turn + 1;
         keep_playing = strcmp(in, "exit");
     } while(keep_playing);
 
