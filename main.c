@@ -215,6 +215,7 @@ void runInput(char *cmd, struct Game *game){
     Call the appropriate function given the input in main.
     */
     if(strstr(cmd, "move") != NULL){
+        game->turn = game->turn + 1;
         movePiece(cmd, game);
     }
     else if(strstr(cmd, "help") != NULL){
@@ -256,7 +257,6 @@ int main()
         printBoard(game);
         printf(">>> ");
         gets(in); // yes I know, not safe. Effective for windows getline(). Replace with better alt when porting to unix
-        game->turn = game->turn + 1;
         runInput(in, game);
         printf("\n\n");
         keep_playing = strcmp(in, "exit");
