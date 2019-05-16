@@ -127,8 +127,8 @@ void initializeGame(struct Game *game){
     game->pieces[11] = makePiece(7,8,3,BLACK); // horse black right
 
     game->pieces[12] = makePiece(1,1,4,WHITE); // castle white left
-    game->pieces[13] = makePiece(1,8,4,WHITE); // castle white right
-    game->pieces[14] = makePiece(8,1,4,BLACK); // castle black left
+    game->pieces[13] = makePiece(8,1,4,WHITE); // castle white right
+    game->pieces[14] = makePiece(1,8,4,BLACK); // castle black left
     game->pieces[15] = makePiece(8,8,4,BLACK); // castle black right
 
     for(int i = 16; i < 32; i++){
